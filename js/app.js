@@ -26,8 +26,11 @@ const NAV_CONFIG = {
     {key:"gov-pilots", label:"Pilot Tracker", icon:"⟳"},
     {key:"gov-milestones", label:"Milestones", icon:"◎"},
     {key:"gov-risk", label:"Risk Matrix", icon:"▲"},
+    {key:"gov-feedback", label:"Public Feedback", icon:"★"},
+    {key:"gov-decision", label:"Decision & Procurement", icon:"⚖"},
     {key:"gov-compliance", label:"Compliance", icon:"▣"},
     {key:"gov-payments", label:"Payments", icon:"₹"},
+    {key:"gov-policy", label:"Policy Assistant", icon:"❓"},
     {key:"gov-audit", label:"Audit Log", icon:"≡"},
     {key:"gov-reports", label:"Reports", icon:"▦"},
     {key:"gov-settings", label:"Settings", icon:"⚙"}
@@ -51,6 +54,8 @@ const NAV_CONFIG = {
     {key:"ad-pilots", label:"Pilots", icon:"⟳"},
     {key:"ad-payments", label:"Payments", icon:"₹"},
     {key:"ad-risk", label:"Risk Alerts", icon:"▲"},
+    {key:"ad-feedback", label:"Public Feedback", icon:"★"},
+    {key:"ad-policy", label:"Policy Assistant", icon:"❓"},
     {key:"ad-reports", label:"Reports", icon:"▦"},
     {key:"ad-audit", label:"Audit Log", icon:"≡"},
     {key:"ad-settings", label:"Settings", icon:"⚙"}
@@ -60,9 +65,12 @@ const NAV_CONFIG = {
     {key:"exp-queue", label:"Review Queue", icon:"▤"},
     {key:"exp-audit", label:"Audit Log", icon:"≡"},
     {key:"exp-settings", label:"Settings", icon:"⚙"}
+  ],
+  public:[
+    {key:"pub-dashboard", label:"Public Dashboard", icon:"◧"}
   ]
 };
-const DEFAULT_VIEW = {department:"gov-overview", startup:"su-overview", admin:"ad-overview", expert:"exp-overview"};
+const DEFAULT_VIEW = {department:"gov-overview", startup:"su-overview", admin:"ad-overview", expert:"exp-overview", public:"pub-dashboard"};
 function defaultViewForRole(){ return DEFAULT_VIEW[DB.currentUser.role]; }
 
 const RENDERERS = {
@@ -70,6 +78,7 @@ const RENDERERS = {
   "gov-verified":renderGovVerified, "gov-pilots":renderGovPilots, "gov-milestones":renderGovMilestones,
   "gov-risk":renderGovRisk, "gov-compliance":renderGovCompliance, "gov-payments":renderGovPayments,
   "gov-audit":renderAuditLogView, "gov-reports":renderGovReports, "gov-settings":renderSettingsView,
+  "gov-feedback":renderGovFeedbackDashboard, "gov-decision":renderGovDecisionList, "gov-policy":renderPolicyAssistant,
 
   "su-overview":renderStartupOverview, "su-discover":renderStartupDiscover, "su-applications":renderStartupApplications,
   "su-pilots":renderStartupPilots, "su-milestones":renderStartupMilestones, "su-payments":renderStartupPayments,
@@ -78,10 +87,13 @@ const RENDERERS = {
   "ad-overview":renderAdminOverview, "ad-startups":renderAdminStartups, "ad-challenges":renderAdminChallenges,
   "ad-experts":renderAdminExperts, "ad-pilots":renderAdminPilots, "ad-payments":renderAdminPayments, "ad-risk":renderAdminRisk,
   "ad-reports":renderAdminReports, "ad-audit":renderAuditLogView, "ad-settings":renderSettingsView,
+  "ad-feedback":renderGovFeedbackDashboard, "ad-policy":renderPolicyAssistant,
 
   "exp-overview":renderExpertOverview, "exp-queue":renderExpertQueue, "exp-workspace":renderExpertEvaluationWorkspace,
   "exp-pilotval":renderExpertPilotValidation, "exp-audit":renderAuditLogView, "exp-settings":renderSettingsView,
-  "gov-expert":renderGovExpertReviews, "su-expert":renderStartupExpertReview
+  "gov-expert":renderGovExpertReviews, "su-expert":renderStartupExpertReview,
+
+  "pub-dashboard":renderPublicDashboard
 };
 
 /* ---------------------------------------------------------
@@ -93,7 +105,8 @@ function login(role){
     department:{name:"Priya Deshmukh", title:"Program Officer", dept:"Water Resources Department, Maharashtra"},
     startup:{name:"Rohan Mehta", title:"Founder", startupId:"ST001"},
     admin:{name:"Admin User", title:"Program Administrator"},
-    expert:{name:expert.name, title:"Technical Expert / Verifier", domain:expert.domain, expertId:expert.id}
+    expert:{name:expert.name, title:"Technical Expert / Verifier", domain:expert.domain, expertId:expert.id},
+    public:{name:"Citizen User", title:"General User / Beneficiary"}
   };
   DB.currentUser = { role, ...identities[role] };
   persist();
@@ -132,7 +145,7 @@ function buildSidebar(){
 function renderUserChip(){
   const u = DB.currentUser;
   const initials = u.name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
-  const roleLabel = {department:"Government", startup:"Startup", admin:"Administrator", expert:"Expert / Verifier"}[u.role] || u.role;
+  const roleLabel = {department:"Government", startup:"Startup", admin:"Administrator", expert:"Expert / Verifier", public:"General User"}[u.role] || u.role;
   document.getElementById("userChip").innerHTML = `<span class="avatar">${initials}</span><span>${esc(u.name)} · ${roleLabel}</span>`;
 }
 
@@ -585,7 +598,6 @@ function openPilotDetail(pilotId){
   const stage = p.stages[p.currentStage];
   const role = DB.currentUser.role;
   const canAdvance = role==="department" || role==="admin";
-  const isFinalStage = p.currentStage === p.stages.length-1;
 
   openDrawer({
     title: p.title, subtitle:`${p.id} · ${esc(p.department)}`,
@@ -601,88 +613,17 @@ function openPilotDetail(pilotId){
         </div>
         <div class="progress-track"><div class="progress-fill" style="width:${stage.progress}%;"></div></div>
         ${canAdvance ? `<div class="form-actions" style="justify-content:flex-start;margin-top:16px;">
-          ${!isFinalStage ? `<button class="btn btn-primary btn-sm" data-action="advance-pilot" data-id="${p.id}">Advance Stage</button>` : ""}
+          ${p.currentStage < p.stages.length-1 ? `<button class="btn btn-primary btn-sm" data-action="advance-pilot" data-id="${p.id}">Advance Stage</button>` : `<span class="badge badge-success">Final Stage Reached</span>`}
           <button class="btn btn-ghost btn-sm" data-action="view-startup" data-id="${startup.id}">View Startup Profile</button>
+          ${p.currentStage >= 3 ? `<button class="btn btn-secondary btn-sm" data-action="open-decision-workspace" data-id="${p.id}">Decision &amp; Procurement Workspace</button>` : ""}
         </div>` : `<div class="form-actions" style="justify-content:flex-start;margin-top:16px;"><button class="btn btn-ghost btn-sm" data-action="view-startup" data-id="${startup.id}">View Startup Profile</button></div>`}
       </div>
-      ${isFinalStage ? renderProcurementPanel(p, canAdvance) : ""}
       <div class="card" style="margin-top:16px;">
         <div class="card-title">Challenge Context</div>
         <p class="muted" style="font-size:13px;margin-top:6px;">${esc(challenge ? challenge.description : "—")}</p>
       </div>
     `
   });
-}
-
-/* ---------------------------------------------------------
-   Procurement Handoff panel — shown once a pilot reaches its
-   final stage. Entirely simulated (see pilot.js).
-   --------------------------------------------------------- */
-function renderProcurementPanel(p, canDecide){
-  const proc = p.procurement || {status:"Not Started", referenceNumber:null, notes:""};
-
-  if(proc.status === "Handed Off"){
-    return `
-      <div class="card" style="margin-top:16px;border-color:var(--success-600);">
-        <div class="card-title">Procurement Handoff</div>
-        <div class="notice" style="margin:10px 0;">External Procurement Handoff — DEMO. No live GeM / MahaTenders integration is used in this prototype.</div>
-        <div class="kv-grid">
-          <div><div class="kv-label">Status</div>${statusBadge("Approved")} Handed Off</div>
-          <div><div class="kv-label">Mock External Reference</div><span style="font-family:'IBM Plex Mono',monospace;">${esc(proc.referenceNumber)}</span></div>
-          <div><div class="kv-label">Decision Date</div>${formatDate(proc.decisionDate)}</div>
-        </div>
-        ${proc.notes ? `<p class="muted" style="font-size:13px;margin-top:10px;">${esc(proc.notes)}</p>` : ""}
-      </div>`;
-  }
-
-  const statusNote = proc.status === "Not Approved" ? `<div class="notice" style="border-color:var(--danger-600);background:var(--danger-100);color:var(--danger-600);margin-bottom:12px;">Previously declined${proc.notes ? ": " + esc(proc.notes) : ""}. A new decision can be recorded below.</div>`
-    : proc.status === "Needs More Evidence" ? `<div class="notice" style="margin-bottom:12px;">More evidence was previously requested${proc.notes ? ": " + esc(proc.notes) : ""}.</div>`
-    : "";
-
-  if(!canDecide){
-    return `
-      <div class="card" style="margin-top:16px;">
-        <div class="card-title">Procurement Handoff</div>
-        ${statusNote}
-        <p class="muted" style="font-size:13px;">Awaiting the government department's decision on procurement handoff.</p>
-      </div>`;
-  }
-
-  return `
-    <div class="card" style="margin-top:16px;">
-      <div class="card-title">Government Decision — Procurement Handoff</div>
-      <p class="muted" style="font-size:13px;margin:8px 0 12px;">The pilot has completed validation. Decide whether this solution proceeds to external procurement.</p>
-      ${statusNote}
-      <div class="form-field"><label>Decision Notes (required to decline)</label>
-        <textarea id="procDecisionNotes-${p.id}" placeholder="Optional notes — required if declining or requesting more evidence."></textarea>
-      </div>
-      <div class="form-actions" style="justify-content:flex-start;margin-top:10px;flex-wrap:wrap;">
-        <button class="btn btn-primary btn-sm" data-action="gov-decision" data-id="${p.id}" data-decision="approve">Approve for Procurement</button>
-        <button class="btn btn-secondary btn-sm" data-action="gov-decision" data-id="${p.id}" data-decision="more-evidence">Request More Evidence</button>
-        <button class="btn btn-danger btn-sm" data-action="gov-decision" data-id="${p.id}" data-decision="reject">Decline</button>
-      </div>
-      <div class="notice" style="margin-top:12px;">External Procurement Handoff — DEMO. Approving generates a mock external reference number only; no real GeM / MahaTenders system is contacted.</div>
-    </div>`;
-}
-
-function governmentDecisionFromUI(pilotId, decision){
-  const notesEl = document.getElementById(`procDecisionNotes-${pilotId}`);
-  const notes = notesEl ? notesEl.value.trim() : "";
-  if((decision === "reject" || decision === "more-evidence") && !notes){
-    toast("Add a note explaining the decision before continuing.", "error");
-    return;
-  }
-  const result = makeGovernmentDecision(pilotId, decision, notes);
-  if(!result.ok){ toast(result.message, "error"); return; }
-  const messages = {
-    approve: `Procurement handoff approved — reference ${result.pilot.procurement.referenceNumber} generated.`,
-    reject: "Procurement handoff declined.",
-    "more-evidence": "More evidence requested before handoff."
-  };
-  toast(messages[decision], decision==="approve" ? "success" : "warn");
-  closeDrawer();
-  openPilotDetail(pilotId);
-  if(appState.currentView && RENDERERS[appState.currentView]) RENDERERS[appState.currentView]();
 }
 
 function startPocFromTracker(challengeId, startupId){
@@ -1244,8 +1185,7 @@ function renderStartupProfile(){
 function renderAdminOverview(){
   const verifiedStartups = DB.startups.filter(s=>s.verification.status==="verified").length;
   const activeChallenges = DB.challenges.filter(c=>c.status!=="Closed").length;
-  const completedPilots = DB.pilots.filter(p=>p.stages[p.stages.length-1].status==="done").length;
-  const procurementReady = DB.pilots.filter(p=>p.procurement && p.procurement.status==="Handed Off").length;
+  const completedPilots = DB.pilots.filter(p=>p.stages[4].status==="done").length;
   const totalFunding = DB.challenges.reduce((s,c)=>s+c.budget,0);
   const paymentsReleased = DB.milestones.filter(m=>m.paymentStatus==="Released").reduce((s,m)=>s+m.paymentAmount,0);
   const highRisk = DB.riskAssessments.filter(r=>r.category==="HIGH"||r.category==="CRITICAL").length;
@@ -1260,14 +1200,9 @@ function renderAdminOverview(){
     </div>
     <div class="section-block stat-grid">
       ${statCard("Completed Pilots", completedPilots, "--success-600")}
-      ${statCard("Procurement-Ready", procurementReady, "--success-600")}
+      ${statCard("Total Pilot Funding", formatINR(totalFunding), "--navy-800")}
       ${statCard("Payments Released", formatINR(paymentsReleased), "--success-600")}
       ${statCard("High Risk Pilots", highRisk, "--danger-600")}
-    </div>
-    <div class="section-block">
-      <div class="stat-grid" style="grid-template-columns:repeat(1,1fr);max-width:260px;">
-        ${statCard("Total Pilot Funding", formatINR(totalFunding), "--navy-800")}
-      </div>
     </div>
     <div class="grid-2 section-block">
       <div class="chart-card"><h4>Startups by Verification</h4><div class="chart-holder"><canvas id="chVerification"></canvas></div></div>
@@ -1539,6 +1474,49 @@ async function runDemoScenario(){
   toast("Risk score calculated for the new pilot.", "success");
   await delay(900);
 
+  /* ---- Expert: pre-pilot technical evaluation (EA001 was pre-assigned) ---- */
+  navigateTo("gov-expert");
+  await delay(400);
+  declareNoConflict("EA001");
+  submitEvaluation("EA001", {
+    scores:{technicalFeasibility:89, innovation:82, deploymentReadiness:85, scalability:80, teamCapability:78, evidenceQuality:82},
+    answers:{}, recommendation:"Recommend",
+    comments:"Detection pipeline is technically sound and field-validated on comparable lake systems."
+  });
+  toast("Expert technical evaluation submitted — score 83.7/100.", "success");
+  await delay(700);
+
+  /* ---- Pilot advances through Validation into Scale-Up Procurement ---- */
+  navigateTo("gov-pilots");
+  advancePilotStage(pilot.id, {confirmedSkip:true});
+  await delay(400);
+  advancePilotStage(pilot.id, {confirmedSkip:true});
+  openPilotDetail(pilot.id);
+  toast("Pilot completed Validation and reached Scale-Up Procurement.", "success");
+  await delay(700);
+
+  /* ---- Expert: post-pilot KPI validation ---- */
+  closeDrawer();
+  const postAssign = assignExpert({startupId:"ST001", challengeId:challenge.id, expertId:"EXP001", type:"Post-Pilot Technical Validation"});
+  declareNoConflict(postAssign.assignment.id);
+  const validation = startPilotValidation(postAssign.assignment.id).validation;
+  updatePilotMetric(validation.id, 0, {actual:"87.4% (target 90%)", status:"Conditional", evidence:"lake_detection_accuracy_report.pdf", comment:"Marginally below target under heavy monsoon turbidity conditions."});
+  updatePilotMetric(validation.id, 1, {actual:"7 min", status:"Pass", evidence:"sensor_response_log.pdf", comment:""});
+  updatePilotMetric(validation.id, 2, {actual:"97.2%", status:"Pass", evidence:"sensor_uptime_report.pdf", comment:""});
+  updatePilotMetric(validation.id, 3, {actual:"4.1%", status:"Pass", evidence:"lake_detection_accuracy_report.pdf", comment:""});
+  submitPilotValidation(validation.id, {recommendation:"Recommend", comments:"Detection accuracy is marginally below target but within acceptable tolerance; recommend proceeding with continued monitoring."});
+  toast("KPI validation submitted — 87.5% overall pilot performance.", "success");
+  await delay(800);
+
+  /* ---- Public: beneficiary feedback on the live pilot ---- */
+  navigateTo("gov-overview");
+  await delay(300);
+  submitFeedback(pilot.id, {rating:5, answers:{easyToUse:"Yes",reliable:"Yes",solvedProblem:"Yes",responseTime:"Yes"}, comment:"Alerts reached our gram panchayat well before the bloom became visible from the shore.", issueType:"None"});
+  submitFeedback(pilot.id, {rating:4, answers:{easyToUse:"Yes",reliable:"Partially",solvedProblem:"Yes",responseTime:"Yes"}, comment:"Recurring short sensor delay after heavy rain, otherwise very reliable.", issueType:"Slow Response"});
+  navigateTo("gov-feedback");
+  toast("Public feedback recorded for the pilot (positive overall, recurring sensor-delay issue).", "success");
+  await delay(800);
+
   navigateTo("gov-compliance");
   await delay(400);
   const ndaSelect = document.getElementById("ndaPilotSelect");
@@ -1546,6 +1524,45 @@ async function runDemoScenario(){
   const ndaResult = generateNdaDocument(challenge.id, "ST001");
   toast(ndaResult.ok ? "NDA & IP Protection PDF generated and downloaded." : ndaResult.message, ndaResult.ok ? "success" : "warn");
   renderGovCompliance();
+  await delay(900);
+
+  /* ---- Government decision, procurement handoff and scale-up ---- */
+  navigateTo("gov-decision");
+  await delay(400);
+  openDecisionWorkspace(pilot.id);
+  await delay(600);
+  makeGovernmentDecision(pilot.id, {
+    decision:"APPROVE FOR PROCUREMENT",
+    reason:"Expert score 83.7/100, KPI validation 87.5% overall with only response-time and uptime fully meeting target, and public feedback positive overall with one recurring sensor-delay issue tracked for remediation."
+  });
+  renderDecisionWorkspaceDrawer(pilot.id);
+  toast("Government decision recorded: Approve for Procurement.", "success");
+  await delay(900);
+
+  createProcurementHandoff(pilot.id, {
+    channel:"GeM", externalReference:"", handoffDate:new Date().toISOString().slice(0,10),
+    responsibleOfficer: DB.currentUser.name, status:"Handed Off — Awaiting External Response"
+  });
+  renderDecisionWorkspaceDrawer(pilot.id);
+  toast("Procurement handoff created (DEMO) — GeM.", "success");
+  await delay(900);
+
+  createScaleUp(pilot.id, {
+    targetDepartments:"Water Resources Department, Rural Development Department",
+    targetLocations:"Konkan Division, Vidarbha Region",
+    rolloutCount:25,
+    expectedImpact:"Early-warning coverage extended across 25+ rural lakes prone to seasonal algal blooms."
+  });
+  renderDecisionWorkspaceDrawer(pilot.id);
+  toast("Scale-up plan created — 25 target locations.", "success");
+  await delay(900);
+
+  closeDrawer();
+  navigateTo("gov-policy");
+  await delay(400);
+  document.getElementById("policyQuestionInput").value = "What evidence is required before a Government decision?";
+  askPolicyAssistantFromUI();
+  toast("Policy Assistant answered from the approved knowledge base.", "success");
   await delay(900);
 
   navigateTo("gov-audit");
@@ -1608,7 +1625,6 @@ document.addEventListener("click", (e)=>{
     case "start-poc": startPocFromTracker(el.dataset.challenge, el.dataset.startup); break;
     case "view-pilot": openPilotDetail(id); break;
     case "advance-pilot": advancePilotFromUI(id); break;
-    case "gov-decision": governmentDecisionFromUI(id, el.dataset.decision); break;
     case "submit-evidence": submitEvidenceFromUI(id); break;
     case "approve-milestone": approveMilestoneFromUI(id); break;
     case "reject-milestone": rejectMilestoneFromUI(id); break;
@@ -1633,6 +1649,11 @@ document.addEventListener("click", (e)=>{
     case "validate-pilot-metric": validatePilotMetricFromUI(id, Number(el.dataset.index)); break;
     case "view-expert-assessment": openExpertAssessmentDrawer(id); break;
     case "open-assign-expert": openAssignExpertModal(); break;
+
+    /* ---- Public / General User module ---- */
+    case "open-public-pilot": openPublicPilotView(id); break;
+    case "open-feedback-form": openPublicFeedbackForm(id); break;
+    case "open-decision-workspace": openDecisionWorkspace(id); break;
   }
 });
 

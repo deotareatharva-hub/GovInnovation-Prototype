@@ -340,13 +340,30 @@ function buildSeedData(){
 
   const expertComments = [];
 
+  /* ---------------------------------------------------------
+     Public / General User module — seed feedback
+     (P003 — CivicAI Adaptive Signal Pilot — is already in
+     Scale-Up Procurement stage, so its feedback + decision
+     workspace has real data to inspect immediately.)
+     --------------------------------------------------------- */
+  const feedback = [
+    {id:"FB001", pilotId:"P003", rating:5, answers:{easyToUse:"Yes",reliable:"Yes",solvedProblem:"Yes",responseTime:"Yes"}, comment:"Traffic clears much faster near the Andheri-Kurla corridor now, especially during evening peak hours.", issueType:"None", classification:"Positive", createdAt:"2026-07-20T09:15:00Z"},
+    {id:"FB002", pilotId:"P003", rating:4, answers:{easyToUse:"Yes",reliable:"Yes",solvedProblem:"Yes",responseTime:"Partially"}, comment:"Big improvement overall. It would be nice to add a mobile notification when a signal is adjusted for an incident nearby.", issueType:"None", classification:"Suggestion", createdAt:"2026-07-22T14:40:00Z"},
+    {id:"FB003", pilotId:"P003", rating:2, answers:{easyToUse:"Partially",reliable:"No",solvedProblem:"Partially",responseTime:"No"}, comment:"Signal at the Kurla junction was unresponsive for almost 20 minutes during heavy rain on the 24th.", issueType:"Service Unavailable", classification:"Issue", createdAt:"2026-07-24T18:05:00Z"},
+    {id:"FB004", pilotId:"P003", rating:5, answers:{easyToUse:"Yes",reliable:"Yes",solvedProblem:"Yes",responseTime:"Yes"}, comment:"Very useful — my daily commute is noticeably shorter.", issueType:"None", classification:"Positive", createdAt:"2026-07-26T08:20:00Z"}
+  ];
+  const governmentDecisions = [];
+  const procurementHandoffs = [];
+  const scaleUps = [];
+
   return {
     currentUser:null,
     startups, departments, challenges,
     applications:[], pilots, milestones,
     documents:[], notifications, auditLogs, riskAssessments,
     experts, expertAssignments, expertEvaluations, evidenceReviews,
-    pilotValidations, conflictDeclarations, expertComments, expertClarifications
+    pilotValidations, conflictDeclarations, expertComments, expertClarifications,
+    feedback, governmentDecisions, procurementHandoffs, scaleUps
   };
 }
 
@@ -358,11 +375,10 @@ function initDB(){
   if(existing){
     DB = existing;
     ensureExpertModuleDefaults(DB);
-    ensurePilotProcurementDefaults(DB);
+    ensurePublicModuleDefaults(DB);
     persist();
   }else{
     DB = buildSeedData();
-    ensurePilotProcurementDefaults(DB);
     Storage.save(DB);
   }
 }

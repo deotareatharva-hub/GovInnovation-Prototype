@@ -256,7 +256,8 @@ function submitEvaluation(assignmentId, {scores, answers, recommendation, condit
   const startup = getStartup(a.startupId);
   addAuditLog(`Expert score submitted: ${overallScore} — ${startup ? startup.name : a.startupId}`);
   addAuditLog(`Recommendation: ${recommendation} — ${startup ? startup.name : a.startupId}`);
-  addNotification(`Expert assessment completed for ${startup ? startup.name : "startup"} — ${recommendation}.`);
+  addNotification(`Your technical evaluation has been completed.`);
+  addNotification(`Expert assessment completed for ${startup ? startup.name : "startup"}.`);
   return {ok:true, evaluation:record};
 }
 
@@ -327,7 +328,8 @@ function submitPilotValidation(validationId, {recommendation, comments}){
   }
   const startup = a ? getStartup(a.startupId) : null;
   addAuditLog(`Technical validation submitted — ${startup ? startup.name : v.pilotId} (${v.overallResult}% pilot performance)`);
-  addNotification(`Pilot validation submitted for ${startup ? startup.name : v.pilotId} — government review required.`);
+  addNotification("Pilot validation submitted. Government review required.");
+  addNotification("Technical validation submitted.");
   return {ok:true, validation:v};
 }
 

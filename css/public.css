@@ -1,0 +1,83 @@
+/* =========================================================
+   GovInnovate — public.css
+   General User / Beneficiary module, Feedback, Government
+   Decision Workspace, Procurement Handoff, Scale-Up.
+   ========================================================= */
+
+/* ---------------- Public pilot / solution cards ---------------- */
+.public-pilot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.public-pilot-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:16px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow-sm);
+}
+.public-pilot-card h4{font-size:14.5px;color:var(--navy-900);margin:0;}
+.public-pilot-card .muted{font-size:12.5px;}
+
+/* ---------------- Rating pills (1-5) ---------------- */
+.rating-pills{display:flex;gap:6px;}
+.rating-pill{
+  width:40px;height:40px;border-radius:50%;border:1px solid var(--border-strong);
+  background:var(--surface);font-weight:700;font-size:14px;color:var(--text-muted);
+  cursor:pointer;transition:all .15s ease;
+}
+.rating-pill:hover{border-color:var(--teal-600);}
+.rating-pill.selected{background:var(--teal-600);border-color:var(--teal-600);color:#fff;}
+
+/* ---------------- Yes/Partially/No style used for feedback questions (reuses .answer-pill) ---------------- */
+.feedback-questions .question-row p{font-size:13px;}
+
+/* ---------------- Classification badges ---------------- */
+.badge-fb-positive{background:var(--success-100);color:var(--success-600);}
+.badge-fb-negative{background:var(--danger-100);color:var(--danger-600);}
+.badge-fb-issue{background:var(--warning-100);color:var(--warning-600);}
+.badge-fb-suggestion{background:var(--teal-100);color:var(--teal-600);}
+
+/* ---------------- Checklist ---------------- */
+.checklist{display:flex;flex-direction:column;gap:8px;margin:10px 0;}
+.checklist-item{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);font-size:13px;
+}
+.checklist-item.pass{border-color:var(--success-600);background:var(--success-100);}
+.checklist-item.fail{border-color:var(--border-strong);background:var(--bg);color:var(--text-faint);}
+.checklist-item .ci-mark{font-weight:800;width:16px;text-align:center;flex-shrink:0;}
+.checklist-item.pass .ci-mark{color:var(--success-600);}
+.checklist-item.fail .ci-mark{color:var(--text-faint);}
+
+/* ---------------- Lifecycle pipeline strip (Pilot -> Procurement -> Scale -> Impact) ---------------- */
+.pipeline-strip{display:flex;align-items:center;flex-wrap:wrap;gap:0;margin:12px 0;}
+.pipeline-node{
+  padding:8px 14px;border-radius:999px;font-size:12px;font-weight:700;
+  border:1.5px solid var(--border-strong);color:var(--text-faint);background:var(--surface);
+}
+.pipeline-node.reached{border-color:var(--teal-600);color:var(--teal-600);background:var(--teal-100);}
+.pipeline-arrow{color:var(--text-faint);padding:0 8px;font-size:13px;}
+
+/* ---------------- Decision option cards (reuses .recommend-card look) ---------------- */
+.decision-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:10px 0;}
+.decision-card{
+  border:1.5px solid var(--border);border-radius:var(--radius-md);padding:12px 14px;cursor:pointer;
+  transition:all .15s ease;
+}
+.decision-card:hover{border-color:var(--border-strong);}
+.decision-card.selected{border-color:var(--teal-600);background:var(--teal-100);}
+.decision-card h5{font-size:13px;margin:0 0 3px;color:var(--navy-900);}
+.decision-card p{font-size:11.5px;color:var(--text-muted);margin:0;}
+
+/* ---------------- Policy assistant ---------------- */
+.policy-qa-log{display:flex;flex-direction:column;gap:14px;margin-top:14px;max-height:420px;overflow-y:auto;}
+.policy-qa-item{border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 14px;background:var(--surface-raised);}
+.policy-qa-question{font-size:13.5px;font-weight:700;color:var(--navy-900);margin:0 0 6px;}
+.policy-qa-answer{font-size:13px;color:var(--text);line-height:1.6;margin:0 0 8px;}
+.policy-qa-source{font-size:11.5px;color:var(--teal-600);font-weight:600;}
+.policy-demo-tag{
+  display:inline-block;background:var(--navy-900);color:#fff;font-size:10.5px;font-weight:700;
+  padding:2px 8px;border-radius:5px;letter-spacing:.04em;margin-bottom:10px;
+}
+
+/* ---------------- Stars readout (read-only average rating) ---------------- */
+.star-readout{font-size:15px;color:var(--warning-600);letter-spacing:1px;}
+
+@media (max-width:640px){
+  .rating-pills{flex-wrap:wrap;}
+}
