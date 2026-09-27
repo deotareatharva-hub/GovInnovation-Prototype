@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GovInnovate — Innovation-to-Procurement Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link rel="stylesheet" href="css/expert.css" />
+    <link rel="stylesheet" href="css/public.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
+  </head>
+  <body>
+    <!-- ===================== TOASTS ===================== -->
+    <div id="toastHost" class="toast-host" aria-live="polite"></div>
+
+    <!-- ===================== MODAL ROOT ===================== -->
+    <div id="modalRoot"></div>
+
+    <!-- ===================== LANDING VIEW ===================== -->
+    <section id="view-landing" class="view">
+      <header class="landing-nav">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">GI</span>
+          <div class="brand-text">
+            <span class="brand-name">GovInnovate</span>
+            <span class="brand-tag"
+              >SIH 2026 • PS SIH26136 Prototype By Team LazyCoder's</span
+            >
+          </div>
+        </div>
+        <button class="btn btn-primary" data-action="goto-login">
+          Explore Platform
+        </button>
+      </header>
+
+      <div class="hero">
+        <div class="hero-copy">
+          <p class="hero-kicker">Innovation-to-Procurement Platform</p>
+          <h1>From Innovation to Procurement</h1>
+          <p class="hero-sub">
+            Helping Government Departments discover, verify, pilot and validate
+            startup innovation before it ever reaches a purchase order.
+          </p>
+          <div class="hero-actions">
+            <button class="btn btn-primary btn-lg" data-action="goto-login">
+              Explore Platform
+            </button>
+           
+          </div>
+          <p class="hero-disclaimer">
+            Prototype for demonstration purposes only — not an official
+            Government of India portal.
+          </p>
+        </div>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>Discover Innovation</h3>
+          <p>
+            AI-assisted challenge-to-startup matching surfaces the right
+            solutions from a verified startup pool.
+          </p>
+        </div>
+        <div class="feature-card">
+          <h3>Govern Pilots</h3>
+          <p>
+            Milestone-driven pilot tracking with evidence validation before any
+            payment is released.
+          </p>
+        </div>
+        <div class="feature-card">
+          <h3>Enable Procurement</h3>
+          <p>
+            Verified startup eligibility and a structured transition from pilot
+            success into procurement.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== LOGIN VIEW ===================== -->
+    <section id="view-login" class="view" hidden>
+      <div class="login-shell">
+        <div class="login-panel">
+          <span class="brand-mark" aria-hidden="true">GI</span>
+          <h2>Sign in to GovInnovate</h2>
+          <p class="muted">
+            Select a role to continue. This is a prototype — no real
+            authentication is performed.
+          </p>
+
+          <div class="role-cards">
+            <div class="role-card">
+              <h3>Government Department</h3>
+              <p>
+                Create challenges, match startups, govern pilots and release
+                payments.
+              </p>
+              <button
+                class="btn btn-primary btn-block"
+                data-action="login"
+                data-role="department"
+              >
+                Demo Login
+              </button>
+            </div>
+            <div class="role-card">
+              <h3>Startup</h3>
+              <p>
+                Discover challenges, apply, track pilots and submit milestone
+                evidence.
+              </p>
+              <button
+                class="btn btn-primary btn-block"
+                data-action="login"
+                data-role="startup"
+              >
+                Demo Login
+              </button>
+            </div>
+            <div class="role-card">
+              <h3>Program Administrator</h3>
+              <p>
+                Oversee the full program — startups, challenges, pilots,
+                payments and risk.
+              </p>
+              <button
+                class="btn btn-primary btn-block"
+                data-action="login"
+                data-role="admin"
+              >
+                Demo Login
+              </button>
+            </div>
+            <div class="role-card">
+              <h3>Expert / Verifier</h3>
+              <p>
+                Independently evaluate technical feasibility, verify evidence
+                and validate pilot outcomes.
+              </p>
+              <button
+                class="btn btn-primary btn-block"
+                data-action="login"
+                data-role="expert"
+              >
+                Demo Login
+              </button>
+            </div>
+            <div class="role-card">
+              <h3>General User / Beneficiary</h3>
+              <p>
+                View eligible pilots and deployed solutions as a citizen,
+                beneficiary or service user, and share feedback.
+              </p>
+              <button
+                class="btn btn-primary btn-block"
+                data-action="login"
+                data-role="public"
+              >
+                Demo Login
+              </button>
+            </div>
+          </div>
+          <button class="link-btn" data-action="goto-landing">
+            ← Back to landing page
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== APP SHELL ===================== -->
+    <section id="view-app" class="view app-shell" hidden>
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+          <span class="brand-mark" aria-hidden="true">GI</span>
+          <div class="brand-text">
+            <span class="brand-name">GovInnovate</span>
+            <span class="brand-tag">SIH 2026 • PS 136</span>
+          </div>
+        </div>
+        <nav id="sidebarNav" class="sidebar-nav"></nav>
+        <div class="sidebar-footer">
+          <div class="demo-mode-pill">● Demo Mode</div>
+          <button class="link-btn small" data-action="reset-demo">
+            Reset Demo Data
+          </button>
+          <button class="link-btn small" data-action="logout">Sign out</button>
+        </div>
+      </aside>
+
+      <div class="app-main">
+        <header class="topbar">
+          <button
+            class="icon-btn sidebar-toggle"
+            data-action="toggle-sidebar"
+            aria-label="Toggle navigation"
+          >
+            ☰
+          </button>
+          <div class="global-search">
+            <input
+              id="globalSearchInput"
+              type="text"
+              placeholder="Search startups, challenges, pilots, departments…"
+              autocomplete="off"
+            />
+            <div id="globalSearchResults" class="search-results" hidden></div>
+          </div>
+          <div class="topbar-actions">
+            
+            <div class="notif-wrap">
+              <button
+                class="icon-btn"
+                data-action="toggle-notifications"
+                aria-label="Notifications"
+              >
+                🔔<span id="notifBadge" class="badge-dot" hidden></span>
+              </button>
+              <div id="notifPanel" class="notif-panel" hidden></div>
+            </div>
+            <div class="user-chip" id="userChip"></div>
+          </div>
+        </header>
+
+        <main id="mainContent" class="main-content"></main>
+      </div>
+    </section>
+
+    <template id="tpl-empty-state">
+      <div class="empty-state">
+        <p class="empty-title"></p>
+        <p class="empty-sub"></p>
+      </div>
+    </template>
+
+    <script src="js/storage.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/matcher.js"></script>
+    <script src="js/verification.js"></script>
+    <script src="js/pilot.js"></script>
+    <script src="js/milestone.js"></script>
+    <script src="js/risk.js"></script>
+    <script src="js/documents.js"></script>
+    <script src="js/expert.js"></script>
+    <script src="js/public.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/expert-ui.js"></script>
+    <script src="js/public-ui.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

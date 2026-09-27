@@ -1,0 +1,74 @@
+/* =========================================================
+   GovInnovate — responsive.css
+   ========================================================= */
+
+@media (max-width: 1080px){
+  .hero{grid-template-columns:1fr;}
+  .hero-flow{order:-1;}
+  .feature-grid{grid-template-columns:1fr 1fr;}
+  .stat-grid{grid-template-columns:1fr 1fr;}
+  .grid-3{grid-template-columns:1fr 1fr;}
+  .role-cards{grid-template-columns:1fr 1fr;}
+}
+
+@media (max-width: 560px){
+  .role-cards{grid-template-columns:1fr;}
+}
+
+@media (max-width: 900px){
+  .sidebar{
+    position:fixed;left:0;top:0;bottom:0;z-index:150;transform:translateX(-100%);
+    transition:transform .2s ease;box-shadow:var(--shadow-md);
+  }
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-toggle{display:flex;}
+  .global-search{max-width:none;}
+  .topbar-actions .btn-secondary{display:none;}
+  .grid-2{grid-template-columns:1fr;}
+  .form-grid{grid-template-columns:1fr;}
+  .kv-grid{grid-template-columns:1fr;}
+
+  .stepper{flex-direction:column;align-items:stretch;}
+  .stepper .step-connector{display:none;}
+  .stepper .step{
+    flex-direction:row;text-align:left;align-items:flex-start;padding:0 0 22px;gap:14px;position:relative;
+  }
+  .stepper .step::after{
+    content:"";position:absolute;left:14px;top:32px;bottom:-6px;width:2px;background:var(--border-strong);
+  }
+  .stepper .step:last-child::after{display:none;}
+  .stepper .step.done::after{background:var(--success-600);}
+}
+
+@media (max-width: 640px){
+  .landing-nav{padding:16px 20px;}
+  .hero{padding:24px 20px 46px;}
+  .hero h1{font-size:32px;max-width:none;}
+  .feature-grid{grid-template-columns:1fr;padding:0 20px 50px;}
+  .stat-grid{grid-template-columns:1fr;}
+  .grid-3{grid-template-columns:1fr;}
+  .main-content{padding:18px 16px 50px;}
+  .login-panel{padding:28px 22px;}
+  .modal-body,.modal-head,.modal-foot{padding-left:18px;padding-right:18px;}
+  .milestone-flow{flex-direction:column;}
+  .mf-arrow{transform:rotate(90deg);}
+  table.data-table{font-size:12.5px;}
+}
+
+/* ===== PREMIUM RESPONSIVE POLISH ===== */
+@media (max-width:1080px){
+  .hero{gap:36px}.hero h1{max-width:14ch}.hero-flow{min-height:250px}.main-content{padding-left:26px;padding-right:26px}
+}
+@media (max-width:900px){
+  .sidebar{box-shadow:18px 0 45px rgba(0,0,0,.22)}.topbar{padding:0 18px}.main-content{padding-top:24px}
+}
+@media (max-width:640px){
+  .landing-nav{padding:16px 18px}.landing-nav .brand-tag{max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .landing-nav .btn{padding:9px 12px;font-size:12px}.hero{padding:36px 18px 54px;gap:30px}.hero h1{font-size:38px;line-height:1.05}.hero-sub{font-size:15px}
+  .hero-actions .btn{width:100%}.hero-flow{min-height:0;padding:28px 18px;border-radius:18px}.flow-step span{min-width:90px;padding:11px 10px;font-size:11px}
+  .feature-grid{padding-left:18px;padding-right:18px}.login-shell{padding:16px}.login-panel{padding:28px 20px;border-radius:19px}.login-panel h2{font-size:23px}
+  .main-content{padding:20px 15px 48px}.page-title{font-size:22px}.topbar{height:62px}.topbar-actions{gap:6px}.user-chip{max-width:130px;overflow:hidden}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+}
